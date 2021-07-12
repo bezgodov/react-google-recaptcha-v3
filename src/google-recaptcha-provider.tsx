@@ -65,7 +65,7 @@ export function GoogleReCaptchaProvider({
     if (!reCaptchaKey) {
       console.warn('<GoogleReCaptchaProvider /> recaptcha key not provided');
 
-      return;
+      reject();
     }
 
     const onLoad = () => {
@@ -75,7 +75,6 @@ export function GoogleReCaptchaProvider({
         );
 
         reject();
-        return;
       }
 
       const grecaptcha = useEnterprise
@@ -88,16 +87,18 @@ export function GoogleReCaptchaProvider({
       });
     };
 
-    injectGoogleReCaptchaScript({
-      reCaptchaKey,
-      useEnterprise,
-      useRecaptchaNet,
-      scriptProps,
-      language,
-      onLoad
-    });
-
-    return;
+    if (reCaptchaKey) {
+      injectGoogleReCaptchaScript({
+        reCaptchaKey,
+        useEnterprise,
+        useRecaptchaNet,
+        scriptProps,
+        language,
+        onLoad
+      });
+    } else {
+      reject();
+    }
   });
 
   useEffect(() => {
