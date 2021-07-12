@@ -25,11 +25,13 @@ interface IGoogleReCaptchaProviderProps {
     appendTo?: 'head' | 'body';
     id?: string;
   };
+  autoLoadScript?: boolean;
   children: ReactNode;
 }
 
 export interface IGoogleReCaptchaConsumerProps {
   executeRecaptcha?: (action?: string) => Promise<string>;
+  loadRecaptcha?: () => Promise<string>;
 }
 
 const GoogleReCaptchaContext = createContext<IGoogleReCaptchaConsumerProps>({
@@ -47,15 +49,16 @@ export function GoogleReCaptchaProvider({
   reCaptchaKey,
   useEnterprise = false,
   useRecaptchaNet = false,
+  autoLoadScript = false,
   scriptProps,
   language,
-  children
+  children,
 }: IGoogleReCaptchaProviderProps) {
   const [greCaptchaInstance, setGreCaptchaInstance] = useState<null | {
     execute: Function;
   }>(null);
 
-  useEffect(() => {
+  const loadRecaptcha = () => {
     if (!reCaptchaKey) {
       console.warn('<GoogleReCaptchaProvider /> recaptcha key not provided');
 
@@ -94,6 +97,11 @@ export function GoogleReCaptchaProvider({
     return () => {
       cleanGoogleRecaptcha(scriptId);
     };
+  };
+
+  useEffect(() => {
+    if (!autoLoadScript) { return; }
+    loadRecaptcha();
   }, [useEnterprise, useRecaptchaNet, scriptProps, language]);
 
   const executeRecaptcha = useCallback(
@@ -113,7 +121,8 @@ export function GoogleReCaptchaProvider({
 
   const googleReCaptchaContextValue = useMemo(
     () => ({
-      executeRecaptcha: greCaptchaInstance ? executeRecaptcha : undefined
+      executeRecaptcha: greCaptchaInstance ? executeRecaptcha : undefined,
+      loadRecaptcha,
     }),
     [executeRecaptcha, greCaptchaInstance]
   );
