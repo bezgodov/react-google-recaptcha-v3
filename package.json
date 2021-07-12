@@ -1,9 +1,9 @@
 {
   "name": "react-google-recaptcha-v3-non-autoload",
-  "version": "1.9.8",
+  "version": "1.9.9",
   "description": "React component for google-recaptcha v3",
-  "module": "dist/react-google-recaptcha-v3.esm.js",
-  "main": "dist/react-google-recaptcha-v3.cjs.js",
+  "module": "dist/react-google-recaptcha-v3-non-autoload.esm.js",
+  "main": "dist/react-google-recaptcha-v3-non-autoload.cjs.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
     "test": "jest --verbose --env=jsdom",
