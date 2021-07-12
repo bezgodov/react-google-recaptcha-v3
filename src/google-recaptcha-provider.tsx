@@ -31,7 +31,7 @@ interface IGoogleReCaptchaProviderProps {
 
 export interface IGoogleReCaptchaConsumerProps {
   executeRecaptcha?: (action?: string) => Promise<string>;
-  loadRecaptcha?: () => Promise<string>;
+  loadRecaptcha: () => Promise<void>;
 }
 
 const GoogleReCaptchaContext = createContext<IGoogleReCaptchaConsumerProps>({
@@ -40,6 +40,9 @@ const GoogleReCaptchaContext = createContext<IGoogleReCaptchaConsumerProps>({
     throw Error(
       'GoogleReCaptcha Context has not yet been implemented, if you are using useGoogleReCaptcha hook, make sure the hook is called inside component wrapped by GoogleRecaptchaProvider'
     );
+  },
+  loadRecaptcha: async () => {
+    return;
   }
 });
 
@@ -58,14 +61,12 @@ export function GoogleReCaptchaProvider({
     execute: Function;
   }>(null);
 
-  const loadRecaptcha = () => {
+  const loadRecaptcha = () => new Promise<void>((resolve, reject) => {
     if (!reCaptchaKey) {
       console.warn('<GoogleReCaptchaProvider /> recaptcha key not provided');
 
       return;
     }
-
-    const scriptId = scriptProps?.id || 'google-recaptcha-v3';
 
     const onLoad = () => {
       if (!window || !(window as any).grecaptcha) {
@@ -73,6 +74,7 @@ export function GoogleReCaptchaProvider({
           `<GoogleRecaptchaProvider /> ${GoogleRecaptchaError.SCRIPT_NOT_AVAILABLE}`
         );
 
+        reject();
         return;
       }
 
@@ -82,6 +84,7 @@ export function GoogleReCaptchaProvider({
 
       grecaptcha.ready(() => {
         setGreCaptchaInstance(grecaptcha);
+        resolve();
       });
     };
 
@@ -94,14 +97,19 @@ export function GoogleReCaptchaProvider({
       onLoad
     });
 
-    return () => {
-      cleanGoogleRecaptcha(scriptId);
-    };
-  };
+    return;
+  });
 
   useEffect(() => {
-    if (!autoLoadScript) { return; }
-    loadRecaptcha();
+    if (!autoLoadScript) {
+      return;
+    }
+    loadRecaptcha().finally();
+
+    return () => {
+      const scriptId = scriptProps?.id || 'google-recaptcha-v3';
+      cleanGoogleRecaptcha(scriptId);
+    };
   }, [useEnterprise, useRecaptchaNet, scriptProps, language]);
 
   const executeRecaptcha = useCallback(
@@ -122,7 +130,7 @@ export function GoogleReCaptchaProvider({
   const googleReCaptchaContextValue = useMemo(
     () => ({
       executeRecaptcha: greCaptchaInstance ? executeRecaptcha : undefined,
-      loadRecaptcha,
+      loadRecaptcha
     }),
     [executeRecaptcha, greCaptchaInstance]
   );
