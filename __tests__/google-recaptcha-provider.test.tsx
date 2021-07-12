@@ -5,7 +5,7 @@ import { render, waitFor } from '@testing-library/react';
 describe('<GoogleReCaptchaProvider />', () => {
   it('inject google recaptcha script to the document', () => {
     render(
-      <GoogleReCaptchaProvider reCaptchaKey="TESTKEY" useRecaptchaNet>
+      <GoogleReCaptchaProvider reCaptchaKey="TESTKEY" useRecaptchaNet autoLoadScript>
         <div />
       </GoogleReCaptchaProvider>
     );
@@ -16,7 +16,7 @@ describe('<GoogleReCaptchaProvider />', () => {
 
   it('remove google recaptcha script from the document when being unmounted', async () => {
     const { unmount } = render(
-      <GoogleReCaptchaProvider reCaptchaKey="TESTKEY" useRecaptchaNet>
+      <GoogleReCaptchaProvider reCaptchaKey="TESTKEY" useRecaptchaNet autoLoadScript>
         <div />
       </GoogleReCaptchaProvider>
     );
@@ -34,7 +34,7 @@ describe('<GoogleReCaptchaProvider />', () => {
 
   it('accept a useRecaptchaNet prop to load recaptcha from recaptcha.net', () => {
     render(
-      <GoogleReCaptchaProvider reCaptchaKey="TESTKEY" useRecaptchaNet>
+      <GoogleReCaptchaProvider reCaptchaKey="TESTKEY" useRecaptchaNet autoLoadScript>
         <div />
       </GoogleReCaptchaProvider>
     );
@@ -51,6 +51,7 @@ describe('<GoogleReCaptchaProvider />', () => {
       <GoogleReCaptchaProvider
         reCaptchaKey="TESTKEY"
         scriptProps={{ nonce: 'NONCE' }}
+        autoLoadScript
       >
         <div />
       </GoogleReCaptchaProvider>
@@ -69,6 +70,7 @@ describe('<GoogleReCaptchaProvider />', () => {
           nonce: 'NONCE',
           defer: true
         }}
+        autoLoadScript
       >
         <div />
       </GoogleReCaptchaProvider>
@@ -82,7 +84,7 @@ describe('<GoogleReCaptchaProvider />', () => {
   describe('when using enterprise version', () => {
     it('accept an enterprise prop to load recaptcha from enterprise source', () => {
       render(
-        <GoogleReCaptchaProvider reCaptchaKey="TESTKEY" useEnterprise>
+        <GoogleReCaptchaProvider reCaptchaKey="TESTKEY" useEnterprise autoLoadScript>
           <div />
         </GoogleReCaptchaProvider>
       );
@@ -100,6 +102,7 @@ describe('<GoogleReCaptchaProvider />', () => {
           reCaptchaKey="TESTKEY"
           useEnterprise
           useRecaptchaNet
+          autoLoadScript
         >
           <div />
         </GoogleReCaptchaProvider>
